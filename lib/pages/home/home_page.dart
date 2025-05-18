@@ -95,7 +95,7 @@ class _HomePageState extends State<_HomePage> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => context.go('/note/new'),
-            child: const Icon(Icons.create),
+            child: const Icon(Icons.add),
           ),
         );
       },
