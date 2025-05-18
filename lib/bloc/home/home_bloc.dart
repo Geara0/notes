@@ -16,13 +16,18 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
     on<HomeGetNotesEvent>(
       _getNotes,
       transformer:
-          (events, mapper) =>
-              events.debounceTime(const Duration(milliseconds: 300)).flatMap(mapper),
+          (events, mapper) => events
+              .debounceTime(const Duration(milliseconds: 300))
+              .flatMap(mapper),
     );
     on<HomeRefreshEvent>(_refresh);
 
+    _notesStream = DBService.db.noteDtos.watchLazy();
+    _notesStream.listen(_streamUpdate);
     add(HomeRefreshEvent());
   }
+
+  late final Stream<void> _notesStream;
 
   final notes = <NoteDto>[];
 
@@ -34,7 +39,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
         await DBService.db.noteDtos
             .where()
             .sortByTimeDesc()
-            .offset(event.start)
+            .offset(event.start ?? notes.length)
             .limit(event.count)
             .findAll();
 
@@ -46,5 +51,9 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
   FutureOr<void> _refresh(HomeRefreshEvent event, Emitter<HomeState> emit) {
     notes.clear();
     add(HomeGetNotesEvent(start: 0));
+  }
+
+  void _streamUpdate(void event) {
+    add(HomeRefreshEvent());
   }
 }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:notes/bloc/new_note/new_note_bloc.dart';
 import 'package:notes/global_variables/global_variables.dart';
 
@@ -76,5 +77,7 @@ class _NewNotePageState extends State<_NewNotePage> {
     bloc.add(
       NewNoteEvent(title: _titleController.text, text: _textController.text),
     );
+
+    context.pop();
   }
 }

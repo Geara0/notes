@@ -18,8 +18,35 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _HomePage extends StatelessWidget {
+class _HomePage extends StatefulWidget {
   const _HomePage();
+
+  @override
+  State<_HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<_HomePage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    // pagination
+    final bloc = context.read<HomeBloc>();
+    _scrollController.addListener(() {
+      if (_scrollController.offset >=
+          _scrollController.position.maxScrollExtent - 1000) {
+        bloc.add(HomeGetNotesEvent());
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +56,25 @@ class _HomePage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(title: const Text('home.header').tr()),
-          body: ListView.separated(
-            itemCount: bloc.notes.length,
-            padding: const EdgeInsets.all(UiGlobal.padding),
-            itemBuilder: (context, i) {
-              return Note(bloc.notes[i]);
+          body: RefreshIndicator(
+            onRefresh: () {
+              bloc.add(HomeRefreshEvent());
+              return bloc.stream.first;
             },
-            separatorBuilder: (_, i) {
-              return const SizedBox(height: UiGlobal.mediumDivider);
-            },
+            child: ListView.separated(
+              clipBehavior: Clip.none,
+              controller: _scrollController,
+              itemCount: bloc.notes.length,
+              padding:
+                  const EdgeInsets.all(UiGlobal.padding) +
+                  EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+              itemBuilder: (context, i) {
+                return Note(bloc.notes[i]);
+              },
+              separatorBuilder: (_, i) {
+                return const SizedBox(height: UiGlobal.mediumDivider);
+              },
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => context.go('/new_note'),
