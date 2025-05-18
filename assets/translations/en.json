@@ -8,6 +8,12 @@
     "lastEdit": "Last edited at: {}",
     "title": "Title",
     "titleEmptyErr": "Title can not be empty",
-    "text": "Text"
+    "text": "Text",
+    "popDialog": {
+      "header": "Unsaved changes",
+      "text": "Are you surely want to leave?",
+      "cancel": "Cancel",
+      "ok": "Ok"
+    }
   }
 }

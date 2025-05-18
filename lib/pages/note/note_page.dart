@@ -5,22 +5,70 @@ import 'package:go_router/go_router.dart';
 import 'package:notes/bloc/note/note_bloc.dart';
 import 'package:notes/global_variables/global_variables.dart';
 
-class NotePage extends StatelessWidget {
+class NotePage extends StatefulWidget {
   const NotePage({super.key, this.id});
 
   final int? id;
 
   @override
+  State<NotePage> createState() => _NotePageState();
+}
+
+class _NotePageState extends State<NotePage> {
+  final GlobalKey<_NewNotePageState> _pageKey = GlobalKey();
+
+  bool get _hasUnsavedChanges {
+    final state = _pageKey.currentState;
+    if (state == null) return false;
+
+    return state._savedText != state._textController.text ||
+        state._savedTitle != state._titleController.text;
+  }
+
+  Future<bool?> _showExitConfirmationDialog() async {
+    return showAdaptiveDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('note.popDialog.header').tr(),
+            content: const Text('note.popDialog.text').tr(),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(false),
+                child: const Text('note.popDialog.cancel').tr(),
+              ),
+              TextButton(
+                onPressed: () => context.pop(true),
+                child: const Text('note.popDialog.ok').tr(),
+              ),
+            ],
+          ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NoteBloc(id),
-      child: _NewNotePage(isEdit: id != null),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+
+        final bool shouldPop =
+            !_hasUnsavedChanges ||
+            (await _showExitConfirmationDialog() ?? false);
+
+        if (context.mounted && shouldPop) context.pop();
+      },
+      child: BlocProvider(
+        create: (context) => NoteBloc(widget.id),
+        child: _NewNotePage(key: _pageKey, isEdit: widget.id != null),
+      ),
     );
   }
 }
 
 class _NewNotePage extends StatefulWidget {
-  const _NewNotePage({required this.isEdit});
+  const _NewNotePage({super.key, required this.isEdit});
 
   final bool isEdit;
 
@@ -34,6 +82,9 @@ class _NewNotePageState extends State<_NewNotePage> {
   final _textController = TextEditingController();
 
   final _editedDate = ValueNotifier<DateTime?>(null);
+
+  String _savedTitle = '';
+  String _savedText = '';
 
   @override
   void dispose() {
@@ -55,6 +106,8 @@ class _NewNotePageState extends State<_NewNotePage> {
           case NoteLoadedState():
             _titleController.text = state.dto.title;
             _textController.text = state.dto.text ?? '';
+            _savedTitle = state.dto.title;
+            _savedText = state.dto.text ?? '';
             _editedDate.value = state.dto.time.toLocal();
           case NoteProcessingState():
             // сейчас не показываем индикатор, тк хранилище локальное
