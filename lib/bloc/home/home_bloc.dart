@@ -21,6 +21,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
               .flatMap(mapper),
     );
     on<HomeRefreshEvent>(_refresh);
+    on<HomeDeleteEvent>(_delete);
 
     _notesStream = DBService.db.noteDtos.watchLazy();
     _notesStream.listen(_streamUpdate);
@@ -28,6 +29,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
   }
 
   late final Stream<void> _notesStream;
+  bool _ignoreStream = false;
 
   final notes = <NoteDto>[];
 
@@ -54,6 +56,20 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
   }
 
   void _streamUpdate(void event) {
+    if (_ignoreStream) return;
     add(HomeRefreshEvent());
+  }
+
+  FutureOr<void> _delete(HomeDeleteEvent event, Emitter<HomeState> emit) async {
+    final index = notes.indexWhere((e) => e.id == event.id);
+    notes.removeAt(index);
+
+    _ignoreStream = true;
+    await DBService.db.writeTxn(
+      () async => await DBService.db.noteDtos.delete(event.id),
+    );
+    _ignoreStream = false;
+
+    emit(HomeBuildState());
   }
 }

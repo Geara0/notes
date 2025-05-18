@@ -57,6 +57,8 @@ class _NewNotePageState extends State<_NewNotePage> {
             _textController.text = state.dto.text ?? '';
             _editedDate.value = state.dto.time.toLocal();
           case NoteProcessingState():
+            // сейчас не показываем индикатор, тк хранилище локальное
+            // и взаимодействие быстрое
             return;
           case NoteDoneState():
             context.pop();

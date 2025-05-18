@@ -11,3 +11,9 @@ class HomeGetNotesEvent extends _HomeEvent {
 }
 
 class HomeRefreshEvent extends _HomeEvent {}
+
+class HomeDeleteEvent extends _HomeEvent {
+  HomeDeleteEvent(this.id);
+
+  final int id;
+}

@@ -81,7 +81,12 @@ class _HomePageState extends State<_HomePage> {
                         // bug in SliverMasonryGrid
                         return const SizedBox.shrink();
                       }
-                      return Note(bloc.notes[i]);
+                      return Note(
+                        key: ValueKey(bloc.notes[i].id),
+                        bloc.notes[i],
+                        onDelete:
+                            () => bloc.add(HomeDeleteEvent(bloc.notes[i].id)),
+                      );
                     },
                   ),
                 ),
