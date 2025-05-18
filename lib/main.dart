@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:notes/global_variables/global_variables.dart';
 import 'package:notes/pages/home/home_page.dart';
-import 'package:notes/pages/new_note/new_note_page.dart';
+import 'package:notes/pages/note/note_page.dart';
 import 'package:notes/services/db_service.dart';
 
 part 'router.dart';

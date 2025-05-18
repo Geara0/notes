@@ -7,8 +7,12 @@ final _router = GoRouter(
       builder: (context, state) => HomePage(key: state.pageKey),
       routes: [
         GoRoute(
-          path: 'new_note',
-          builder: (context, state) => NewNotePage(key: state.pageKey),
+          path: 'note/:id',
+          builder: (context, state) {
+            final stringId = state.pathParameters['id'];
+            final id = stringId != null ? int.tryParse(stringId) : null;
+            return NotePage(key: state.pageKey, id: id);
+          },
         ),
       ],
     ),

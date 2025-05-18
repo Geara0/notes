@@ -4,10 +4,14 @@ part 'note_dto.g.dart';
 
 @collection
 class NoteDto {
-  NoteDto({required this.title, this.text, required DateTime time})
-    : time = time.toUtc();
+  NoteDto({
+    this.id = Isar.autoIncrement,
+    required this.title,
+    this.text,
+    required DateTime time,
+  }) : time = time.toUtc();
 
-  Id id = Isar.autoIncrement;
+  Id id;
 
   @Index(type: IndexType.value)
   String title;

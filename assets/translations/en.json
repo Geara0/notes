@@ -3,7 +3,8 @@
     "header": "Notes"
   },
   "newNote": {
-    "header": "New note",
+    "newHeader": "New note",
+    "editHeader": "Edit note",
     "title": "Title",
     "titleEmptyErr": "Title can not be empty",
     "text": "Text"
