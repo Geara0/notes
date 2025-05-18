@@ -31,9 +31,7 @@ class NoteBloc extends Bloc<_NoteEvent, NoteState> {
       time: DateTime.now(),
     );
 
-    await DBService.db.writeTxn(
-      () async => await DBService.db.noteDtos.put(note),
-    );
+    await DBService.saveNote(note.toDao());
 
     emit(NoteDoneState());
   }
@@ -44,13 +42,13 @@ class NoteBloc extends Bloc<_NoteEvent, NoteState> {
   ) async {
     emit(NoteProcessingState());
 
-    final note = await DBService.db.noteDtos.get(event.id);
+    final note = await DBService.getNote(event.id);
 
     if (note == null) {
       emit(NoteDoneState());
       return;
     }
 
-    emit(NoteLoadedState(note));
+    emit(NoteLoadedState(NoteDto.fromDao(note)));
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:isar/isar.dart';
 import 'package:meta/meta.dart';
 import 'package:notes/dto/note/note_dto.dart';
 import 'package:notes/services/db_service.dart';
@@ -23,7 +22,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
     on<HomeRefreshEvent>(_refresh);
     on<HomeDeleteEvent>(_delete);
 
-    _notesStream = DBService.db.noteDtos.watchLazy();
+    _notesStream = DBService.notesStream();
     _notesStream.listen(_streamUpdate);
     add(HomeRefreshEvent());
   }
@@ -37,15 +36,12 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
     HomeGetNotesEvent event,
     Emitter<HomeState> emit,
   ) async {
-    final res =
-        await DBService.db.noteDtos
-            .where()
-            .sortByTimeDesc()
-            .offset(event.start ?? notes.length)
-            .limit(event.count)
-            .findAll();
+    final res = await DBService.getNotes(
+      event.start ?? notes.length,
+      event.count,
+    );
 
-    notes.addAll(res);
+    notes.addAll(res.map(NoteDto.fromDao));
 
     emit(HomeBuildState());
   }
@@ -65,9 +61,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
     notes.removeAt(index);
 
     _ignoreStream = true;
-    await DBService.db.writeTxn(
-      () async => await DBService.db.noteDtos.delete(event.id),
-    );
+    await DBService.deleteNote(event.id);
     _ignoreStream = false;
 
     emit(HomeBuildState());

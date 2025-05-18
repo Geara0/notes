@@ -1,23 +1,23 @@
-import 'package:isar/isar.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:notes/dao/note/note_dao.dart';
 
-part 'note_dto.g.dart';
+part 'note_dto.freezed.dart';
 
-@collection
-class NoteDto {
-  NoteDto({
-    this.id = Isar.autoIncrement,
-    required this.title,
-    this.text,
+@freezed
+abstract class NoteDto with _$NoteDto {
+  const NoteDto._();
+
+  @Assert('title.isNotEmpty')
+  @Assert('text?.isNotEmpty != false')
+  factory NoteDto({
+    required String title,
+    String? text,
     required DateTime time,
-  }) : time = time.toUtc();
+    required int id,
+  }) = _NoteDto;
 
-  Id id;
+  factory NoteDto.fromDao(NoteDao dao) =>
+      NoteDto(title: dao.title, text: dao.text, time: dao.time, id: dao.id);
 
-  @Index(type: IndexType.value)
-  String title;
-
-  @Index(type: IndexType.value)
-  String? text;
-
-  DateTime time;
+  NoteDao toDao() => NoteDao(title: title, text: text, time: time, id: id);
 }
