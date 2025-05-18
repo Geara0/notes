@@ -33,15 +33,20 @@ class _NewNotePageState extends State<_NewNotePage> {
   final _titleController = TextEditingController();
   final _textController = TextEditingController();
 
+  final _editedDate = ValueNotifier<DateTime?>(null);
+
   @override
   void dispose() {
     _titleController.dispose();
     _textController.dispose();
+    _editedDate.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final timeFormat = DateFormat('yyyy MMM d HH:mm');
+
     return BlocListener<NoteBloc, NoteState>(
       listener: (context, state) {
         switch (state) {
@@ -50,6 +55,7 @@ class _NewNotePageState extends State<_NewNotePage> {
           case NoteLoadedState():
             _titleController.text = state.dto.title;
             _textController.text = state.dto.text ?? '';
+            _editedDate.value = state.dto.time.toLocal();
           case NoteProcessingState():
             return;
           case NoteDoneState():
@@ -59,10 +65,24 @@ class _NewNotePageState extends State<_NewNotePage> {
       child: Scaffold(
         appBar: AppBar(
           title:
-              Text(
-                widget.isEdit ? 'newNote.editHeader' : 'newNote.newHeader',
-              ).tr(),
+              Text(widget.isEdit ? 'note.editHeader' : 'note.newHeader').tr(),
         ),
+        bottomNavigationBar:
+            widget.isEdit
+                ? ValueListenableBuilder(
+                  valueListenable: _editedDate,
+                  builder: (context, value, child) {
+                    if (value == null) return const SizedBox.shrink();
+
+                    return SafeArea(
+                      child: Text(
+                        textAlign: TextAlign.center,
+                        'note.lastEdit'.tr(args: [timeFormat.format(value)]),
+                      ),
+                    );
+                  },
+                )
+                : null,
         body: Form(
           key: _formKey,
           child: ListView(
@@ -70,10 +90,10 @@ class _NewNotePageState extends State<_NewNotePage> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'newNote.title'.tr()),
+                decoration: InputDecoration(labelText: 'note.title'.tr()),
                 validator: (value) {
                   if (value?.trim().isNotEmpty != true) {
-                    return 'newNote.titleEmptyErr'.tr();
+                    return 'note.titleEmptyErr'.tr();
                   }
                   return null;
                 },
@@ -83,9 +103,8 @@ class _NewNotePageState extends State<_NewNotePage> {
               const SizedBox(height: UiGlobal.mediumDivider),
               TextFormField(
                 controller: _textController,
-                decoration: InputDecoration(labelText: 'newNote.text'.tr()),
+                decoration: InputDecoration(labelText: 'note.text'.tr()),
                 maxLines: null,
-                textInputAction: TextInputAction.done,
               ),
             ],
           ),

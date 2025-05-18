@@ -2,9 +2,10 @@
   "home": {
     "header": "Notes"
   },
-  "newNote": {
+  "note": {
     "newHeader": "New note",
     "editHeader": "Edit note",
+    "lastEdit": "Last edited at: {}",
     "title": "Title",
     "titleEmptyErr": "Title can not be empty",
     "text": "Text"
