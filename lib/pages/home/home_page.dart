@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:notes/bloc/home/home_bloc.dart';
 import 'package:notes/global_variables/global_variables.dart';
@@ -61,19 +62,30 @@ class _HomePageState extends State<_HomePage> {
               bloc.add(HomeRefreshEvent());
               return bloc.stream.first;
             },
-            child: ListView.separated(
-              clipBehavior: Clip.none,
+            child: CustomScrollView(
               controller: _scrollController,
-              itemCount: bloc.notes.length,
-              padding:
-                  const EdgeInsets.all(UiGlobal.padding) +
-                  EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
-              itemBuilder: (context, i) {
-                return Note(bloc.notes[i]);
-              },
-              separatorBuilder: (_, i) {
-                return const SizedBox(height: UiGlobal.mediumDivider);
-              },
+              slivers: [
+                SliverPadding(
+                  padding:
+                      const EdgeInsets.all(UiGlobal.padding) +
+                      EdgeInsets.only(
+                        bottom: MediaQuery.paddingOf(context).bottom,
+                      ),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: UiGlobal.mediumDivider,
+                    crossAxisSpacing: UiGlobal.mediumDivider,
+                    childCount: bloc.notes.length,
+                    itemBuilder: (context, i) {
+                      if (i >= bloc.notes.length) {
+                        // bug in SliverMasonryGrid
+                        return const SizedBox.shrink();
+                      }
+                      return Note(bloc.notes[i]);
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           floatingActionButton: FloatingActionButton(

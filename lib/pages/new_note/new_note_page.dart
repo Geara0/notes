@@ -49,15 +49,18 @@ class _NewNotePageState extends State<_NewNotePage> {
               controller: _titleController,
               decoration: InputDecoration(labelText: 'newNote.title'.tr()),
               validator: (value) {
-                if (value?.isNotEmpty != true) {
+                if (value?.trim().isNotEmpty != true) {
                   return 'newNote.titleEmptyErr'.tr();
                 }
                 return null;
               },
+              maxLines: 1,
             ),
+            const SizedBox(height: UiGlobal.mediumDivider),
             TextFormField(
               controller: _textController,
               decoration: InputDecoration(labelText: 'newNote.text'.tr()),
+              maxLines: null,
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:notes/global_variables/global_variables.dart';
 import 'package:notes/pages/home/home_page.dart';
 import 'package:notes/pages/new_note/new_note_page.dart';
 import 'package:notes/services/db_service.dart';
@@ -31,8 +32,19 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       routerConfig: _router,
       themeMode: ThemeMode.system,
-      darkTheme: ThemeData.dark(),
-      theme: ThemeData.light(),
+      darkTheme: _buildTheme(ThemeData.dark()),
+      theme: _buildTheme(ThemeData.light()),
     );
   }
+}
+
+ThemeData _buildTheme(ThemeData theme) {
+  return theme.copyWith(
+    cardTheme: const CardTheme(margin: EdgeInsets.zero),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(UiGlobal.inputRadius)),
+      ),
+    ),
+  );
 }

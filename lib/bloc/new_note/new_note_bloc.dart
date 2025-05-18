@@ -21,8 +21,8 @@ class NewNoteBloc extends Bloc<NewNoteEvent, NewNoteState> {
     emit(NewNoteProcessingState());
 
     final note = NoteDto(
-      title: event.title,
-      text: event.text?.isNotEmpty != true ? null : event.text,
+      title: event.title.trim(),
+      text: event.text?.trim().isNotEmpty != true ? null : event.text!.trim(),
       time: DateTime.now(),
     );
 
