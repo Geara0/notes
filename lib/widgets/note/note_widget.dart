@@ -21,7 +21,7 @@ class Note extends StatelessWidget {
       motion: const BehindMotion(),
       dismissible: DismissiblePane(
         onDismissed: onDelete,
-        dismissThreshold: 0.5,
+        dismissThreshold: 0.49,
       ),
       openThreshold: 0.5,
       closeThreshold: 0.5,
