@@ -17,7 +17,7 @@ class HomeBloc extends Bloc<_HomeEvent, HomeState> {
       _getNotes,
       transformer:
           (events, mapper) =>
-              events.debounceTime(Duration(milliseconds: 300)).flatMap(mapper),
+              events.debounceTime(const Duration(milliseconds: 300)).flatMap(mapper),
     );
     on<HomeRefreshEvent>(_refresh);
 

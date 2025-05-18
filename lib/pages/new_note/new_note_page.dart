@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notes/bloc/new_note/new_note_bloc.dart';
@@ -10,7 +11,7 @@ class NewNotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NewNoteBloc(),
-      child: _NewNotePage(),
+      child: const _NewNotePage(),
     );
   }
 }
@@ -37,30 +38,32 @@ class _NewNotePageState extends State<_NewNotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('New note')),
+      appBar: AppBar(title: const Text('newNote.header').tr()),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(UiGlobal.padding),
+          padding: const EdgeInsets.all(UiGlobal.padding),
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: 'newNote.title'.tr()),
               validator: (value) {
-                if (value?.isNotEmpty != true) return 'Title can not be empty';
+                if (value?.isNotEmpty != true) {
+                  return 'newNote.titleEmptyErr'.tr();
+                }
                 return null;
               },
             ),
             TextFormField(
               controller: _textController,
-              decoration: InputDecoration(labelText: 'Text'),
+              decoration: InputDecoration(labelText: 'newNote.text'.tr()),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _save,
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }

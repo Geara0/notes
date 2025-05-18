@@ -1,0 +1,11 @@
+{
+  "home": {
+    "header": "Notes"
+  },
+  "newNote": {
+    "header": "New note",
+    "title": "Title",
+    "titleEmptyErr": "Title can not be empty",
+    "text": "Text"
+  }
+}

@@ -20,10 +20,11 @@ class NewNoteBloc extends Bloc<NewNoteEvent, NewNoteState> {
   ) async {
     emit(NewNoteProcessingState());
 
-    final note =
-        NoteDto()
-          ..text = event.text?.isNotEmpty != true ? null : event.text
-          ..title = event.title;
+    final note = NoteDto(
+      title: event.title,
+      text: event.text?.isNotEmpty != true ? null : event.text,
+      time: DateTime.now(),
+    );
 
     await DBService.db.writeTxn(
       () async => await DBService.db.noteDtos.put(note),

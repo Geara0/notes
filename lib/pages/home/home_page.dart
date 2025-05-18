@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => HomeBloc(), child: _HomePage());
+    return BlocProvider(
+      create: (context) => HomeBloc(),
+      child: const _HomePage(),
+    );
   }
 }
 
@@ -24,19 +28,20 @@ class _HomePage extends StatelessWidget {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return Scaffold(
+          appBar: AppBar(title: const Text('home.header').tr()),
           body: ListView.separated(
             itemCount: bloc.notes.length,
-            padding: EdgeInsets.all(UiGlobal.padding),
+            padding: const EdgeInsets.all(UiGlobal.padding),
             itemBuilder: (context, i) {
               return Note(bloc.notes[i]);
             },
             separatorBuilder: (_, i) {
-              return SizedBox(height: UiGlobal.mediumDivider);
+              return const SizedBox(height: UiGlobal.mediumDivider);
             },
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => context.go('/new_note'),
-            child: Icon(Icons.create),
+            child: const Icon(Icons.create),
           ),
         );
       },
